@@ -22,4 +22,5 @@
     <string name="clear">Clear</string>
     <string name="repo_details">Repo Details</string>
     <string name="contributor_details">Contributor Details</string>
+    <string name="no_contributors">No Contributors</string>
 </resources>

@@ -122,10 +122,16 @@ public class RepoActivity extends AppCompatActivity implements RepoView, Contrib
 
     @Override
     public void attachContributors(List<Owner> contributorList) {
-        contributorAdapter.updateList(contributorList);
+        if (contributorList != null && contributorList.size() > 0) {
+            contributorAdapter.updateList(contributorList);
 
-        textViewFetching.setVisibility(View.GONE);
-        recyclerViewContributors.setVisibility(View.VISIBLE);
+            textViewFetching.setVisibility(View.GONE);
+            recyclerViewContributors.setVisibility(View.VISIBLE);
+        } else {
+            recyclerViewContributors.setVisibility(View.GONE);
+            textViewFetching.setText(getResources().getString(R.string.no_contributors));
+            textViewFetching.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
