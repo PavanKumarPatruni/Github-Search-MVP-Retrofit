@@ -1,22 +1,17 @@
 package com.pavan.githubassignment.home;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.pavan.githubassignment.GitHubApplication;
 import com.pavan.githubassignment.R;
 import com.pavan.githubassignment.api.models.GetRepos;
-import com.pavan.githubassignment.api.models.Item;
-
-import java.util.ArrayList;
-import java.util.Timer;
+import com.pavan.githubassignment.utils.KeyboardUtils;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import timber.log.Timber;
 
 public class HomePresenterImpl implements HomePresenter {
 
@@ -26,7 +21,7 @@ public class HomePresenterImpl implements HomePresenter {
     private int pageLength = 10, pageNum = 1, totalCount = 0, itemsCount = 0;
     private boolean isFilterApplied;
 
-    private String searchText, sortBy, orderBy;
+    private String searchText = "", sortBy = "", orderBy = "";
 
     HomePresenterImpl(Context context) {
         this.context = context;
@@ -86,6 +81,12 @@ public class HomePresenterImpl implements HomePresenter {
 
     @Override
     public void onSearchClicked(String searchText, String sortBy, String orderBy) {
+        KeyboardUtils.hideKeyboard((Activity) context);
+
+        if (!this.searchText.equalsIgnoreCase(searchText)) {
+            resetData();
+        }
+
         this.searchText = searchText;
         this.sortBy = sortBy;
         this.orderBy = orderBy;
@@ -109,6 +110,7 @@ public class HomePresenterImpl implements HomePresenter {
     public void onFilterApply() {
         isFilterApplied = true;
         resetData();
+        getReposByText();
     }
 
     @Override
@@ -136,8 +138,6 @@ public class HomePresenterImpl implements HomePresenter {
         pageNum = 1;
 
         totalCount = itemsCount = 0;
-
-        getReposByText();
     }
 
     private void clearFilters() {
