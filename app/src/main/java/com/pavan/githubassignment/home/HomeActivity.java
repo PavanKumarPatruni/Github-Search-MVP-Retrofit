@@ -21,6 +21,8 @@ import com.pavan.githubassignment.api.models.Item;
 import com.pavan.githubassignment.repo.RepoActivity;
 import com.pavan.githubassignment.utils.Constants;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -49,8 +51,6 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
     private RepoAdapter repoAdapter;
 
     private String orderBy, sortBy;
-    private int pageLength = 10, pageNum = 1, totalCount = 0, itemsCount = 0;
-    private boolean isFilterApplied;
 
     private BottomSheetDialog dialog;
 
@@ -105,51 +105,14 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
         dialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialogInterface) {
-                if (isFilterApplied) {
-                    searchClick();
-                } else {
-                    clearFilters();
-                }
+                homePresenterImpl.onDialogCancel();
             }
         });
     }
 
     @OnClick(R.id.imageViewSearch)
     public void searchClick() {
-        hideKeyboard(this);
-        clearFilters();
-        resetData();
-    }
-
-    private void resetData() {
-        repoAdapter.clearList();
-
-        pageLength = 10;
-        pageNum = 1;
-
-        totalCount = itemsCount = 0;
-
-        searchText();
-    }
-
-    private void clearFilters() {
-        orderBy = sortBy = "";
-
-        manageSortButtons();
-        manageOrderButtons();
-    }
-
-    private void searchText() {
-        homePresenterImpl.onSearchClicked(editTextSearch.getText().toString(), sortBy, orderBy, pageLength, pageNum);
-    }
-
-    private static void hideKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        View view = activity.getCurrentFocus();
-        if (view == null) {
-            view = new View(activity);
-        }
-        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        homePresenterImpl.onSearchClicked(editTextSearch.getText().toString(), sortBy, orderBy);
     }
 
     @OnClick(R.id.imageViewFilters)
@@ -188,23 +151,20 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
     }
 
     @Override
-    public void updateList(GetRepos getRepos) {
-        if (getRepos != null) {
-            repoAdapter.setLoaded();
+    public void resetFilters() {
+        clearSortButtons();
+        clearOrderButtons();
+    }
 
-            totalCount = getRepos.getTotalCount();
-            itemsCount += getRepos.getItems().size();
+    @Override
+    public void updateList(List<Item> items) {
+        repoAdapter.setLoaded();
+        repoAdapter.updateList(items);
+    }
 
-            if (itemsCount != 0) {
-                repoAdapter.updateList(getRepos.getItems());
-            } else {
-                changeMessage(getString(R.string.no_repo_found));
-            }
-        } else {
-            if (itemsCount == 0) {
-                changeMessage(getString(R.string.no_repo_found));
-            }
-        }
+    @Override
+    public void clearList() {
+        repoAdapter.clearList();
     }
 
     @Override
@@ -219,9 +179,7 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
     }
 
     private void manageSortButtons() {
-        textViewStars.setSelected(false);
-        textViewForks.setSelected(false);
-        textViewUpdated.setSelected(false);
+        clearSortButtons();
 
         switch (sortBy) {
             case "stars":
@@ -236,9 +194,14 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
         }
     }
 
+    private void clearSortButtons() {
+        textViewStars.setSelected(false);
+        textViewForks.setSelected(false);
+        textViewUpdated.setSelected(false);
+    }
+
     private void manageOrderButtons() {
-        textViewDescending.setSelected(false);
-        textViewAscending.setSelected(false);
+        clearOrderButtons();
 
         switch (orderBy) {
             case "desc":
@@ -248,6 +211,11 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
                 textViewAscending.setSelected(true);
                 break;
         }
+    }
+
+    private void clearOrderButtons() {
+        textViewDescending.setSelected(false);
+        textViewAscending.setSelected(false);
     }
 
     @Override
@@ -275,25 +243,18 @@ public class HomeActivity extends AppCompatActivity implements HomeView, RepoAda
                 break;
             case R.id.textViewApply:
                 dialog.dismiss();
-                isFilterApplied = true;
-                resetData();
+                homePresenterImpl.onFilterApply();
+                searchClick();
                 break;
             case R.id.textViewClear:
                 dialog.dismiss();
-                clearFilters();
-                if (isFilterApplied) {
-                    isFilterApplied = false;
-                    searchClick();
-                }
+                homePresenterImpl.onFilterClear();
                 break;
         }
     }
 
     @Override
     public void onLoadMore() {
-        if (itemsCount != 0 && totalCount != itemsCount) {
-            pageNum++;
-            searchText();
-        }
+        homePresenterImpl.onLoadMore();
     }
 }

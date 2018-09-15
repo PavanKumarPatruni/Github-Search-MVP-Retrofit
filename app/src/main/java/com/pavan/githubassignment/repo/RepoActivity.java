@@ -122,16 +122,24 @@ public class RepoActivity extends AppCompatActivity implements RepoView, Contrib
 
     @Override
     public void attachContributors(List<Owner> contributorList) {
-        if (contributorList != null && contributorList.size() > 0) {
-            contributorAdapter.updateList(contributorList);
+        contributorAdapter.updateList(contributorList);
+        hideMessage();
+    }
 
-            textViewFetching.setVisibility(View.GONE);
-            recyclerViewContributors.setVisibility(View.VISIBLE);
-        } else {
-            recyclerViewContributors.setVisibility(View.GONE);
-            textViewFetching.setText(getResources().getString(R.string.no_contributors));
-            textViewFetching.setVisibility(View.VISIBLE);
-        }
+    public void hideMessage() {
+        textViewFetching.setVisibility(View.GONE);
+        recyclerViewContributors.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void changeMessage(String message) {
+        textViewFetching.setText(message);
+        showMessage();
+    }
+
+    public void showMessage() {
+        recyclerViewContributors.setVisibility(View.GONE);
+        textViewFetching.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -155,4 +163,7 @@ public class RepoActivity extends AppCompatActivity implements RepoView, Contrib
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 }

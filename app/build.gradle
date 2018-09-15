@@ -36,8 +36,12 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
 
+    implementation "com.squareup.okhttp3:logging-interceptor:3.10.0"
+
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    implementation 'com.jakewharton.timber:timber:4.7.0'
 
     implementation 'de.hdodenhof:circleimageview:2.2.0'
 

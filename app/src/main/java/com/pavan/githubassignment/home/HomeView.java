@@ -2,6 +2,9 @@ package com.pavan.githubassignment.home;
 
 
 import com.pavan.githubassignment.api.models.GetRepos;
+import com.pavan.githubassignment.api.models.Item;
+
+import java.util.List;
 
 public interface HomeView {
 
@@ -11,9 +14,13 @@ public interface HomeView {
 
     void hideMessage();
 
-    void updateList(GetRepos getRepos);
+    void updateList(List<Item> items);
+
+    void clearList();
 
     void showList();
 
     void hideList();
+
+    void resetFilters();
 }

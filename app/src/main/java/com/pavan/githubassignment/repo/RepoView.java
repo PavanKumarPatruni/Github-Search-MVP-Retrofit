@@ -8,4 +8,6 @@ public interface RepoView {
 
     void attachContributors(List<Owner> contributorList);
 
+    void changeMessage(String message);
+
 }
