@@ -1,4 +1,4 @@
-# github-app
+# Guthub Search App
 
 Github searching app which displays repository and contributor details
 
